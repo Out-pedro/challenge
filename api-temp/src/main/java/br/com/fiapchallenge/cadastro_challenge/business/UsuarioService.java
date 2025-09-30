@@ -55,4 +55,8 @@ public class UsuarioService {
         return usuario.getSenha().equals(senha);
     }
 
+    @Transactional
+    public void deletaDadosUsuario(String email) {
+        usuarioRepository.deleteByEmail(email);
+    }
 }

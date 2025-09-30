@@ -3,7 +3,6 @@ package br.com.fiapchallenge.cadastro_challenge.api;
 import br.com.fiapchallenge.cadastro_challenge.api.request.LoginRequestDTO;
 import br.com.fiapchallenge.cadastro_challenge.api.request.UsuarioRequestDTO;
 import br.com.fiapchallenge.cadastro_challenge.api.response.UsuarioResponseDTO;
-import br.com.fiapchallenge.cadastro_challenge.business.EmojiService;
 import br.com.fiapchallenge.cadastro_challenge.business.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.Map;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    private final EmojiService emojiService;
 
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> gravaDadosUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
@@ -37,32 +35,6 @@ public class UsuarioController {
             resposta.put("message", "Login ou senha incorretos");
             return ResponseEntity.status(401).body(resposta);
         }
-    }
-
-    @PostMapping("/emoji")
-    public ResponseEntity<EmojiResponse> enviaEmoji(@RequestBody EmojiRequest emojiRequest) {
-        // Salva o emoji no banco
-        emojiService.saveEmoji(emojiRequest.getEmoji());
-
-        // Retorna a emoção mais comum
-        String mostCommonEmotion = emojiService.getMostCommonEmotion();
-
-        return ResponseEntity.ok(new EmojiResponse(mostCommonEmotion));
-    }
-
-    // Classes internas para requisição e resposta
-    public static class EmojiRequest {
-        private String emoji;
-
-        public String getEmoji() { return emoji; }
-        public void setEmoji(String emoji) { this.emoji = emoji; }
-    }
-
-    public static class EmojiResponse {
-        private String mostCommonEmotion;
-
-        public EmojiResponse(String mostCommonEmotion) { this.mostCommonEmotion = mostCommonEmotion; }
-        public String getMostCommonEmotion() { return mostCommonEmotion; }
     }
 
 

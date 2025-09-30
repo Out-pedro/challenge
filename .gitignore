@@ -12,7 +12,7 @@
 .cxx
 
 # ===== SPRING BOOT =====
-/target
+/api/target
 *.class
 *.log
 *.jar

@@ -1,6 +1,5 @@
 package App.bem.estar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,18 +10,42 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import br.com.fiap.challenge.R
+import br.com.fiap.challenge.interfece.ApiClient
+import br.com.fiap.challenge.request.EmojiRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun HomeScreen(navController: NavController?) {
     var humorSelecionado by remember { mutableStateOf("") }
+    var emocaoMaisComum by remember { mutableStateOf("🙂") }
+    var autoavaliacoes by remember { mutableStateOf(0) }
+
+    fun sendEmojiToBackend(emoji: String) {
+        // Use coroutine para chamada suspend
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.emojiApi.sendEmoji(EmojiRequest(emoji))
+                if (response.isSuccessful) {
+                    val mostCommon = response.body()?.mostCommonEmotion ?: "Desconhecida"
+                    // Atualiza o state na UI
+                    withContext(Dispatchers.Main) {
+                        emocaoMaisComum = mostCommon
+                    }
+                }
+            } catch (e: Exception) {
+                println("Erro ao enviar emoji: ${e.message}")
+            }
+        }
+    }
+
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -90,13 +113,11 @@ fun HomeScreen(navController: NavController?) {
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "• Autoavaliações feitas: 12",
-
+                        text = "• Autoavaliações feitas: $autoavaliacoes",
                         fontSize = 16.sp
                     )
                     Text(
-                        text = "• Emoção mais comum: 🙂",
-
+                        text = "• Emoção mais comum: $emocaoMaisComum",
                         fontSize = 16.sp
                     )
                     Text(
@@ -130,7 +151,11 @@ fun HomeScreen(navController: NavController?) {
                             shape = CircleShape,
                             modifier = Modifier
                                 .size(72.dp)
-                                .clickable { humorSelecionado = emoji }
+                                .clickable {
+                                    humorSelecionado = emoji
+                                    autoavaliacoes += 1
+                                    sendEmojiToBackend(emoji)
+                                }
                                 .shadow(4.dp, CircleShape)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
