@@ -1,15 +1,28 @@
+# ===== ANDROID =====
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/.idea
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# ===== SPRING BOOT =====
+/target
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# ===== SISTEMA =====
+# Arquivos de SO
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ===== ENV =====
+*.env
+.env.local
